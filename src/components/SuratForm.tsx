@@ -14,6 +14,7 @@ import {
   generateNomorSurat,
   checkScheduleConflicts,
   formatTanggalIndo,
+  cn,
 } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -24,6 +25,7 @@ import {
   MapPin,
   FileCheck,
   Clock,
+  ShieldAlert,
 } from "lucide-react";
 
 interface SuratFormProps {
@@ -130,6 +132,8 @@ export function SuratForm({
     );
   }, [allSurat, selectedPetugas, tanggalPerjalananList, initialData?.id]);
 
+  const hasConflicts = conflicts.length > 0;
+
   // Handler: Tambah tanggal perjalanan
   const handleAddTanggal = () => {
     setTanggalPerjalananList([...tanggalPerjalananList, todayStr]);
@@ -179,6 +183,15 @@ export function SuratForm({
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Blokir jika ada bentrok jadwal
+    if (hasConflicts) {
+      alert(
+        "Tidak dapat menyimpan surat tugas!\n\n" +
+          "Terdapat bentrok jadwal pada pegawai yang dipilih. Sesuai aturan, 1 orang cuma bisa berkegiatan 1 kali sehari. Harap ubah tanggal kegiatan atau ganti pegawai yang ditugaskan."
+      );
+      return;
+    }
+
     if (!maksudPerjalanan.trim()) {
       alert("Harap masukkan maksud perjalanan");
       return;
@@ -203,23 +216,6 @@ export function SuratForm({
     if (selectedPetugas.length === 0) {
       alert("Harap pilih minimal 1 petugas");
       return;
-    }
-
-    // Peringatan bentrok jika ada
-    if (conflicts.length > 0) {
-      const confirmProceed = window.confirm(
-        `PERINGATAN BENTROK JADWAL:\n` +
-          conflicts
-            .map(
-              (c) =>
-                `- ${c.petugasNama} telah memiliki surat tugas pada ${formatTanggalIndo(
-                  c.tanggal
-                )} (No: ${c.nomorSurat})`
-            )
-            .join("\n") +
-          `\n\nAturan: 1 orang hanya boleh 1 kegiatan sehari.\nApakah Anda tetap ingin melanjutkan penyimpanan surat ini?`
-      );
-      if (!confirmProceed) return;
     }
 
     const payload: SuratTugasInput = {
@@ -393,52 +389,90 @@ export function SuratForm({
           </div>
 
           <div className="space-y-3">
-            {selectedPetugas.map((petugas, index) => (
-              <div
-                key={index}
-                className="p-3.5 rounded-xl border border-gray-200 bg-gray-50/70 hover:bg-white hover:border-gray-300 transition flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4"
-              >
-                <div className="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                  {index + 1}
-                </div>
+            {selectedPetugas.map((petugas, index) => {
+              // Cek apakah pegawai ini bentrok
+              const employeeConflict = conflicts.find(
+                (c) => c.petugasId === petugas.id
+              );
 
-                {/* Dropdown Master Pegawai */}
-                <div className="flex-1">
-                  <select
-                    value={petugas.id}
-                    onChange={(e) => handleSelectPetugas(index, e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-hidden"
-                  >
-                    {MASTER_PEGAWAI.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.nama} — {m.jabatan}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              return (
+                <div
+                  key={index}
+                  className={cn(
+                    "p-3.5 rounded-xl border transition flex flex-col space-y-2",
+                    employeeConflict
+                      ? "border-rose-400 bg-rose-50/70 shadow-xs"
+                      : "border-gray-200 bg-gray-50/70 hover:bg-white hover:border-gray-300"
+                  )}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
+                    <div
+                      className={cn(
+                        "w-7 h-7 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0",
+                        employeeConflict ? "bg-rose-600" : "bg-emerald-600"
+                      )}
+                    >
+                      {index + 1}
+                    </div>
 
-                {/* Readonly Info: NIP & Jabatan */}
-                <div className="text-xs text-gray-600 md:w-64 truncate">
-                  <span className="font-semibold text-gray-800">
-                    NIP: {petugas.nip || "-"}
-                  </span>
-                  <br />
-                  <span className="text-gray-500">{petugas.jabatan}</span>
-                </div>
+                    {/* Dropdown Master Pegawai */}
+                    <div className="flex-1">
+                      <select
+                        value={petugas.id}
+                        onChange={(e) =>
+                          handleSelectPetugas(index, e.target.value)
+                        }
+                        className={cn(
+                          "w-full px-3 py-2 bg-white border rounded-lg text-sm font-medium focus:ring-2 outline-hidden",
+                          employeeConflict
+                            ? "border-rose-300 focus:ring-rose-500 text-rose-950 font-semibold"
+                            : "border-gray-300 focus:ring-emerald-500"
+                        )}
+                      >
+                        {MASTER_PEGAWAI.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.nama} — {m.jabatan}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                {/* Tombol Hapus */}
-                {selectedPetugas.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePetugas(index)}
-                    className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition self-end md:self-center"
-                    title="Hapus petugas ini"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ))}
+                    {/* Readonly Info: NIP & Jabatan */}
+                    <div className="text-xs text-gray-600 md:w-64 truncate">
+                      <span className="font-semibold text-gray-800">
+                        NIP: {petugas.nip || "-"}
+                      </span>
+                      <br />
+                      <span className="text-gray-500">{petugas.jabatan}</span>
+                    </div>
+
+                    {/* Tombol Hapus */}
+                    {selectedPetugas.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePetugas(index)}
+                        className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition self-end md:self-center"
+                        title="Hapus petugas ini"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Indikator Spesifik Pegawai Bentrok */}
+                  {employeeConflict && (
+                    <div className="ml-0 md:ml-11 flex items-center space-x-1.5 text-xs font-semibold text-rose-700 bg-rose-100/80 px-2.5 py-1 rounded-lg">
+                      <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                      <span>
+                        Bentrok jadwal: Sudah ada surat tugas pada tanggal{" "}
+                        <u>{formatTanggalIndo(employeeConflict.tanggal)}</u> (No:{" "}
+                        {employeeConflict.nomorSurat}).
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -527,26 +561,39 @@ export function SuratForm({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {tanggalPerjalananList.map((tgl, idx) => (
-                  <div key={idx} className="flex items-center space-x-2">
-                    <input
-                      type="date"
-                      value={tgl}
-                      onChange={(e) => handleUpdateTanggal(idx, e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-hidden"
-                      required
-                    />
-                    {tanggalPerjalananList.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTanggal(idx)}
-                        className="p-1.5 text-gray-400 hover:text-rose-600 transition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
+                {tanggalPerjalananList.map((tgl, idx) => {
+                  const dateHasConflict = conflicts.some(
+                    (c) => c.tanggal === tgl
+                  );
+
+                  return (
+                    <div key={idx} className="flex items-center space-x-2">
+                      <input
+                        type="date"
+                        value={tgl}
+                        onChange={(e) =>
+                          handleUpdateTanggal(idx, e.target.value)
+                        }
+                        className={cn(
+                          "w-full px-3 py-2 bg-white border rounded-lg text-sm focus:ring-2 outline-hidden",
+                          dateHasConflict
+                            ? "border-rose-400 bg-rose-50 text-rose-950 focus:ring-rose-500"
+                            : "border-gray-300 focus:ring-emerald-500"
+                        )}
+                        required
+                      />
+                      {tanggalPerjalananList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTanggal(idx)}
+                          className="p-1.5 text-gray-400 hover:text-rose-600 transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -595,55 +642,94 @@ export function SuratForm({
         </div>
 
         {/* BENTROK JADWAL ALERT BANNER */}
-        {conflicts.length > 0 && (
-          <div className="p-4 rounded-xl bg-amber-50 border-2 border-amber-300 text-amber-900">
+        {hasConflicts && (
+          <div className="p-4 rounded-xl bg-rose-50 border-2 border-rose-300 text-rose-900 shadow-sm animate-pulse">
             <div className="flex items-start space-x-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <ShieldAlert className="w-6 h-6 text-rose-600 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-bold">
-                  Peringatan: Jadwal Bentrok Terdeteksi!
+                <h4 className="text-sm font-bold flex items-center space-x-1.5 text-rose-800">
+                  <span>JADWAL BENTROK TERDETEKSI (TOMBOL SIMPAN DINONAKTIFKAN)</span>
                 </h4>
-                <p className="text-xs text-amber-800 mt-1">
-                  Sesuai aturan: <em>1 orang cuma bisa berkegiatan 1 kali sehari</em>. Pegawai berikut telah memiliki penugasan lain pada tanggal yang sama:
+                <p className="text-xs text-rose-700 mt-1">
+                  Sesuai aturan sistem: <strong>1 orang cuma bisa berkegiatan 1 kali sehari</strong>. Tombol simpan dinonaktifkan sampai Anda mengubah tanggal perjalanan atau mengganti pegawai yang bersangkutan:
                 </p>
-                <ul className="list-disc list-inside text-xs mt-2 space-y-1 font-medium">
+                <ul className="list-disc list-inside text-xs mt-2.5 space-y-1 font-medium bg-white/70 p-3 rounded-lg border border-rose-200">
                   {conflicts.map((c, i) => (
                     <li key={i}>
-                      <strong>{c.petugasNama}</strong> sudah terdaftar pada tanggal{" "}
+                      <strong>{c.petugasNama}</strong> telah terdaftar bertugas pada{" "}
                       <strong>{formatTanggalIndo(c.tanggal)}</strong> (Surat No:{" "}
-                      <code>{c.nomorSurat}</code>)
+                      <code className="bg-rose-100 text-rose-900 px-1 py-0.5 rounded">
+                        {c.nomorSurat}
+                      </code>
+                      )
                     </li>
                   ))}
                 </ul>
+                <p className="text-[11px] text-rose-600 font-semibold mt-2">
+                  👉 Silakan ubah tanggal kegiatan atau ganti pegawai di atas agar tombol simpan aktif kembali.
+                </p>
               </div>
             </div>
           </div>
         )}
 
         {/* TOMBOL AKSI */}
-        <div className="pt-4 border-t border-gray-200 flex items-center justify-end space-x-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="px-5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
-          >
-            Batal
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md hover:shadow-lg transition flex items-center space-x-2 disabled:opacity-50"
-          >
-            <Check className="w-4 h-4" />
-            <span>
-              {isSubmitting
-                ? "Menyimpan..."
-                : initialData
-                ? "Perbarui Surat Tugas"
-                : "Simpan & Buat Surat"}
-            </span>
-          </button>
+        <div className="pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Status teks info */}
+          <div className="text-xs font-medium">
+            {hasConflicts ? (
+              <span className="text-rose-600 flex items-center space-x-1.5 font-bold">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>Harap selesaikan jadwal bentrok sebelum menyimpan.</span>
+              </span>
+            ) : (
+              <span className="text-emerald-700 flex items-center space-x-1.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Tidak ada bentrok jadwal, siap disimpan.</span>
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isSubmitting}
+              className="px-5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || hasConflicts}
+              title={
+                hasConflicts
+                  ? "Tombol dinonaktifkan karena terdapat bentrok jadwal pegawai"
+                  : undefined
+              }
+              className={cn(
+                "px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition flex items-center space-x-2",
+                hasConflicts
+                  ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed shadow-none"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white hover:shadow-lg disabled:opacity-50"
+              )}
+            >
+              {hasConflicts ? (
+                <ShieldAlert className="w-4 h-4 text-rose-500" />
+              ) : (
+                <Check className="w-4 h-4" />
+              )}
+              <span>
+                {isSubmitting
+                  ? "Menyimpan..."
+                  : hasConflicts
+                  ? "Jadwal Bentrok (Perlu Diperbaiki)"
+                  : initialData
+                  ? "Perbarui Surat Tugas"
+                  : "Simpan & Buat Surat"}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </form>
