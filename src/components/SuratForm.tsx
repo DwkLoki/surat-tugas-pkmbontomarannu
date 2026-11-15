@@ -14,6 +14,7 @@ import {
   generateNomorSurat,
   checkScheduleConflicts,
   formatTanggalIndo,
+  formatTerbilangHari,
   cn,
 } from "@/lib/utils";
 import {
@@ -78,16 +79,41 @@ export function SuratForm({
     initialData?.tempatTujuan?.join(", ") || ""
   );
 
-  const [lamanya, setLamanya] = useState<string>(
-    initialData?.lamanya || "1 (Satu) Hari"
-  );
-
   // Multi-tanggal kegiatan
   const [tanggalPerjalananList, setTanggalPerjalananList] = useState<string[]>(
     initialData?.tanggalPerjalanan && initialData.tanggalPerjalanan.length > 0
       ? initialData.tanggalPerjalanan
       : [todayStr]
   );
+
+  // Status dan nilai manual untuk kolom "lamanya"
+  const initialIsManualLamanya = useMemo(() => {
+    if (!initialData?.lamanya) return false;
+    const initialAuto = formatTerbilangHari(
+      initialData.tanggalPerjalanan?.length || 1
+    );
+    return initialData.lamanya !== initialAuto;
+  }, [initialData]);
+
+  const [isManualLamanya, setIsManualLamanya] =
+    useState<boolean>(initialIsManualLamanya);
+  const [customLamanya, setCustomLamanya] = useState<string>(
+    initialData?.lamanya || ""
+  );
+
+  // Kalkulasi otomatis lamanya perjalanan berdasarkan jumlah tanggal kegiatan
+  const autoLamanya = useMemo(() => {
+    const validCount = tanggalPerjalananList.filter(Boolean).length;
+    return formatTerbilangHari(validCount || 1);
+  }, [tanggalPerjalananList]);
+
+  // Nilai aktif untuk lamanya perjalanan
+  const activeLamanya = useMemo(() => {
+    if (isManualLamanya) {
+      return customLamanya;
+    }
+    return autoLamanya;
+  }, [isManualLamanya, customLamanya, autoLamanya]);
 
   const [dibebankanPada, setDibebankanPada] = useState<string>(
     initialData?.dibebankanPada || "JKN Kapitasi"
@@ -224,7 +250,7 @@ export function SuratForm({
       nomorDpa: nomorDpa.trim(),
       maksudPerjalanan: maksudPerjalanan.trim(),
       tempatTujuan,
-      lamanya: lamanya.trim(),
+      lamanya: activeLamanya.trim(),
       tanggalPerjalanan: tanggalPerjalananList,
       dibebankanPada,
       tanggalSurat,
@@ -526,20 +552,61 @@ export function SuratForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Lamanya
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-gray-700">
+                    Lamanya
+                  </label>
+                  {isManualLamanya ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsManualLamanya(false)}
+                      className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold"
+                    >
+                      Gunakan Otomatis ({autoLamanya})
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomLamanya(activeLamanya);
+                        setIsManualLamanya(true);
+                      }}
+                      className="text-[11px] text-gray-500 hover:text-emerald-600 font-semibold"
+                    >
+                      Edit Manual
+                    </button>
+                  )}
+                </div>
                 <div className="relative">
                   <input
                     type="text"
-                    value={lamanya}
-                    onChange={(e) => setLamanya(e.target.value)}
+                    value={activeLamanya}
+                    onChange={(e) => {
+                      setCustomLamanya(e.target.value);
+                      setIsManualLamanya(true);
+                    }}
                     placeholder="Contoh: 1 (Satu) Hari"
-                    className="w-full px-3.5 py-2.5 pl-9 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden transition"
+                    className={cn(
+                      "w-full px-3.5 py-2.5 pl-9 border rounded-xl text-sm outline-hidden transition",
+                      isManualLamanya
+                        ? "bg-white border-emerald-500 text-gray-900 focus:ring-2 focus:ring-emerald-500 font-medium"
+                        : "bg-gray-50 border-gray-300 text-gray-800 focus:ring-2 focus:ring-emerald-500"
+                    )}
                     required
                   />
                   <Clock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  {isManualLamanya ? (
+                    <span className="text-amber-700 font-medium">
+                      Mode manual aktif.
+                    </span>
+                  ) : (
+                    <span>
+                      Otomatis: {tanggalPerjalananList.length} hari kegiatan.
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
 

@@ -36,6 +36,41 @@ const ROMAN_MONTHS = [
   "XII",
 ];
 
+const SATUAN_ANGKA = [
+  "",
+  "Satu",
+  "Dua",
+  "Tiga",
+  "Empat",
+  "Lima",
+  "Enam",
+  "Tujuh",
+  "Delapan",
+  "Sembilan",
+  "Sepuluh",
+  "Sebelas",
+];
+
+function angkaKeTerbilang(n: number): string {
+  if (n < 12) return SATUAN_ANGKA[n];
+  if (n < 20) return `${angkaKeTerbilang(n - 10)} Belas`;
+  if (n < 100)
+    return `${angkaKeTerbilang(Math.floor(n / 10))} Puluh ${angkaKeTerbilang(
+      n % 10
+    )}`.trim();
+  return `${n}`;
+}
+
+/**
+ * Format jumlah hari ke format standar dinas:
+ * Contoh: 1 -> "1 (Satu) Hari", 2 -> "2 (Dua) Hari", 3 -> "3 (Tiga) Hari"
+ */
+export function formatTerbilangHari(count: number): string {
+  if (count <= 0) return "1 (Satu) Hari";
+  const terbilang = angkaKeTerbilang(count);
+  return `${count} (${terbilang}) Hari`;
+}
+
 /**
  * Format string tanggal YYYY-MM-DD ke format Indonesia (cth: "15 Oktober 2026")
  */
