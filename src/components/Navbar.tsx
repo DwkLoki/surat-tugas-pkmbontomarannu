@@ -26,6 +26,7 @@ export function Navbar({ currentTab, onTabChange, onOpenGuide }: NavbarProps) {
                 src="/logo-takalar.png"
                 alt="Logo Takalar"
                 fill
+                sizes="40px"
                 className="object-contain"
                 priority
               />

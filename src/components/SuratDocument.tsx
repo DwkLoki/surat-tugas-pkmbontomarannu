@@ -20,6 +20,7 @@ export function SuratDocument({ surat }: SuratDocumentProps) {
               src="/logo-takalar.png"
               alt="Logo Takalar"
               fill
+              sizes="80px"
               className="object-contain"
               priority
             />
