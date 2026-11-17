@@ -6,7 +6,6 @@ import { SuratTable } from "@/components/SuratTable";
 import { SuratForm } from "@/components/SuratForm";
 import { SuratDetailView } from "@/components/SuratDetailView";
 import { DeleteModal } from "@/components/DeleteModal";
-import { SupabaseGuideModal } from "@/components/SupabaseGuideModal";
 import {
   getSuratList,
   createSurat,
@@ -15,7 +14,6 @@ import {
   getNextNomorUrut,
 } from "@/lib/storage";
 import { exportSuratToExcel } from "@/lib/excel-export";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import { SuratTugas, SuratTugasInput } from "@/types/surat";
 import { Loader2 } from "lucide-react";
 
@@ -30,7 +28,6 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
   // Load data dari storage
@@ -153,7 +150,6 @@ export default function HomePage() {
             setActiveTab("list");
           }
         }}
-        onOpenGuide={() => setIsGuideOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -212,13 +208,6 @@ export default function HomePage() {
         onConfirm={handleConfirmDelete}
         suratNomor={deletingSurat?.nomorSurat || ""}
         isDeleting={isDeleting}
-      />
-
-      {/* Modal Panduan Supabase */}
-      <SupabaseGuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-        isConnected={isSupabaseConfigured}
       />
     </div>
   );
