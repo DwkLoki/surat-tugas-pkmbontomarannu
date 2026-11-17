@@ -27,6 +27,7 @@ import {
   FileCheck,
   Clock,
   ShieldAlert,
+  ChevronDown,
 } from "lucide-react";
 
 interface SuratFormProps {
@@ -442,14 +443,14 @@ export function SuratForm({
                     </div>
 
                     {/* Dropdown Master Pegawai */}
-                    <div className="flex-1">
+                    <div className="flex-1 relative">
                       <select
                         value={petugas.id}
                         onChange={(e) =>
                           handleSelectPetugas(index, e.target.value)
                         }
                         className={cn(
-                          "w-full px-3 py-2 bg-white border rounded-lg text-sm font-medium focus:ring-2 outline-hidden",
+                          "appearance-none w-full pl-3.5 pr-9 py-2 bg-white border rounded-lg text-sm font-medium focus:ring-2 outline-hidden cursor-pointer transition",
                           employeeConflict
                             ? "border-rose-300 focus:ring-rose-500 text-rose-950 font-semibold"
                             : "border-gray-300 focus:ring-emerald-500"
@@ -461,6 +462,12 @@ export function SuratForm({
                           </option>
                         ))}
                       </select>
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none",
+                          employeeConflict ? "text-rose-500" : "text-gray-400"
+                        )}
+                      />
                     </div>
 
                     {/* Readonly Info: NIP & Jabatan */}
@@ -670,39 +677,45 @@ export function SuratForm({
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Dibebankan Pada (Sumber Dana)
                 </label>
-                <select
-                  value={dibebankanPada}
-                  onChange={(e) => setDibebankanPada(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden transition font-medium"
-                >
-                  <option value="JKN Kapitasi">JKN Kapitasi</option>
-                  <option value="BOK (Non Fisik)">BOK (Non Fisik)</option>
-                  <option value="DAK Fisik">DAK Fisik</option>
-                  <option value="APBD">APBD</option>
-                  <option value="Lainnya">Lainnya</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={dibebankanPada}
+                    onChange={(e) => setDibebankanPada(e.target.value)}
+                    className="appearance-none w-full pl-3.5 pr-10 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden transition font-medium cursor-pointer"
+                  >
+                    <option value="JKN Kapitasi">JKN Kapitasi</option>
+                    <option value="BOK (Non Fisik)">BOK (Non Fisik)</option>
+                    <option value="DAK Fisik">DAK Fisik</option>
+                    <option value="APBD">APBD</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Pejabat yang Menandatangani
                 </label>
-                <select
-                  value={pejabatPenandatangan.id}
-                  onChange={(e) => {
-                    const found = DAFTAR_PENANDATANGAN.find(
-                      (p) => p.id === e.target.value
-                    );
-                    if (found) setPejabatPenandatangan(found);
-                  }}
-                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden transition font-medium"
-                >
-                  {DAFTAR_PENANDATANGAN.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nama} ({p.jabatan})
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={pejabatPenandatangan.id}
+                    onChange={(e) => {
+                      const found = DAFTAR_PENANDATANGAN.find(
+                        (p) => p.id === e.target.value
+                      );
+                      if (found) setPejabatPenandatangan(found);
+                    }}
+                    className="appearance-none w-full pl-3.5 pr-10 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden transition font-medium cursor-pointer"
+                  >
+                    {DAFTAR_PENANDATANGAN.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama} ({p.jabatan})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
             </div>
           </div>

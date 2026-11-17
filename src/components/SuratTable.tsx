@@ -16,6 +16,7 @@ import {
   Calendar,
   Layers,
   Clock,
+  ChevronDown,
 } from "lucide-react";
 
 interface SuratTableProps {
@@ -126,18 +127,21 @@ export function SuratTable({
         <div className="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-end">
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-gray-400" />
-            <select
-              value={selectedDana}
-              onChange={(e) => setSelectedDana(e.target.value)}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-hidden"
-            >
-              <option value="ALL">Semua Sumber Dana</option>
-              <option value="JKN Kapitasi">JKN Kapitasi</option>
-              <option value="BOK (Non Fisik)">BOK (Non Fisik)</option>
-              <option value="DAK Fisik">DAK Fisik</option>
-              <option value="APBD">APBD</option>
-              <option value="Lainnya">Lainnya</option>
-            </select>
+            <div className="relative">
+              <select
+                value={selectedDana}
+                onChange={(e) => setSelectedDana(e.target.value)}
+                className="appearance-none pl-3.5 pr-9 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden cursor-pointer transition"
+              >
+                <option value="ALL">Semua Sumber Dana</option>
+                <option value="JKN Kapitasi">JKN Kapitasi</option>
+                <option value="BOK (Non Fisik)">BOK (Non Fisik)</option>
+                <option value="DAK Fisik">DAK Fisik</option>
+                <option value="APBD">APBD</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
           <button
