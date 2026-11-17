@@ -268,9 +268,9 @@ export function SuratForm({
       className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
     >
       {/* Header Form */}
-      <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
-          <FileCheck className="w-6 h-6 text-emerald-600" />
+      <div className="p-4 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center space-x-2">
+          <FileCheck className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" />
           <span>
             {initialData ? "Edit Surat Tugas" : "Formulir Surat Tugas Baru"}
           </span>
@@ -280,7 +280,7 @@ export function SuratForm({
         </p>
       </div>
 
-      <div className="p-6 space-y-8">
+      <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
         {/* SECTION 1: NOMOR & IDENTITAS SURAT */}
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-800 mb-4 flex items-center space-x-2">
@@ -391,7 +391,7 @@ export function SuratForm({
 
         {/* SECTION 2: PEGAWAI YANG DITUGASKAN (MAKSIMAL 7) */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-0 mb-3">
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-800 flex items-center space-x-2">
                 <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-bold">
@@ -407,7 +407,7 @@ export function SuratForm({
               <button
                 type="button"
                 onClick={handleAddPetugas}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition border border-emerald-200"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition border border-emerald-200 self-start sm:self-auto shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Orang ({selectedPetugas.length}/7)</span>
@@ -426,52 +426,66 @@ export function SuratForm({
                 <div
                   key={index}
                   className={cn(
-                    "p-3.5 rounded-xl border transition flex flex-col space-y-2",
+                    "p-3 sm:p-3.5 rounded-xl border transition flex flex-col space-y-2",
                     employeeConflict
                       ? "border-rose-400 bg-rose-50/70 shadow-xs"
                       : "border-gray-200 bg-gray-50/70 hover:bg-white hover:border-gray-300"
                   )}
                 >
-                  <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
-                    <div
-                      className={cn(
-                        "w-7 h-7 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0",
-                        employeeConflict ? "bg-rose-600" : "bg-emerald-600"
-                      )}
-                    >
-                      {index + 1}
-                    </div>
-
-                    {/* Dropdown Master Pegawai */}
-                    <div className="flex-1 relative">
-                      <select
-                        value={petugas.id}
-                        onChange={(e) =>
-                          handleSelectPetugas(index, e.target.value)
-                        }
+                  <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                    <div className="flex items-center space-x-2 md:contents">
+                      <div
                         className={cn(
-                          "appearance-none w-full pl-3.5 pr-9 py-2 bg-white border rounded-lg text-sm font-medium focus:ring-2 outline-hidden cursor-pointer transition",
-                          employeeConflict
-                            ? "border-rose-300 focus:ring-rose-500 text-rose-950 font-semibold"
-                            : "border-gray-300 focus:ring-emerald-500"
+                          "w-7 h-7 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0",
+                          employeeConflict ? "bg-rose-600" : "bg-emerald-600"
                         )}
                       >
-                        {MASTER_PEGAWAI.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.nama} — {m.jabatan}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        className={cn(
-                          "w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none",
-                          employeeConflict ? "text-rose-500" : "text-gray-400"
-                        )}
-                      />
+                        {index + 1}
+                      </div>
+
+                      {/* Dropdown Master Pegawai */}
+                      <div className="flex-1 relative min-w-0">
+                        <select
+                          value={petugas.id}
+                          onChange={(e) =>
+                            handleSelectPetugas(index, e.target.value)
+                          }
+                          className={cn(
+                            "appearance-none w-full pl-3.5 pr-9 py-2 bg-white border rounded-lg text-xs sm:text-sm font-medium focus:ring-2 outline-hidden cursor-pointer transition truncate",
+                            employeeConflict
+                              ? "border-rose-300 focus:ring-rose-500 text-rose-950 font-semibold"
+                              : "border-gray-300 focus:ring-emerald-500"
+                          )}
+                        >
+                          {MASTER_PEGAWAI.map((m) => (
+                            <option key={m.id} value={m.id}>
+                              {m.nama} — {m.jabatan}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          className={cn(
+                            "w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none",
+                            employeeConflict ? "text-rose-500" : "text-gray-400"
+                          )}
+                        />
+                      </div>
+
+                      {/* Tombol Hapus (Tampilan Mobile) */}
+                      {selectedPetugas.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePetugas(index)}
+                          className="md:hidden p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition shrink-0"
+                          title="Hapus petugas ini"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
 
                     {/* Readonly Info: NIP & Jabatan */}
-                    <div className="text-xs text-gray-600 md:w-64 truncate">
+                    <div className="text-xs text-gray-600 pl-9 md:pl-0 md:w-64 truncate">
                       <span className="font-semibold text-gray-800">
                         NIP: {petugas.nip || "-"}
                       </span>
@@ -479,12 +493,12 @@ export function SuratForm({
                       <span className="text-gray-500">{petugas.jabatan}</span>
                     </div>
 
-                    {/* Tombol Hapus */}
+                    {/* Tombol Hapus (Tampilan Desktop) */}
                     {selectedPetugas.length > 1 && (
                       <button
                         type="button"
                         onClick={() => handleRemovePetugas(index)}
-                        className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition self-end md:self-center"
+                        className="hidden md:block p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition self-center shrink-0"
                         title="Hapus petugas ini"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -754,7 +768,7 @@ export function SuratForm({
         )}
 
         {/* TOMBOL AKSI */}
-        <div className="pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Status teks info */}
           <div className="text-xs font-medium">
             {hasConflicts ? (
@@ -770,12 +784,12 @@ export function SuratForm({
             )}
           </div>
 
-          <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition text-center"
             >
               Batal
             </button>
@@ -788,18 +802,18 @@ export function SuratForm({
                   : undefined
               }
               className={cn(
-                "px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition flex items-center space-x-2",
+                "w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center space-x-2 text-center",
                 hasConflicts
                   ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed shadow-none"
                   : "bg-emerald-600 hover:bg-emerald-700 text-white hover:shadow-lg disabled:opacity-50"
               )}
             >
               {hasConflicts ? (
-                <ShieldAlert className="w-4 h-4 text-rose-500" />
+                <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0" />
               ) : (
-                <Check className="w-4 h-4" />
+                <Check className="w-4 h-4 shrink-0" />
               )}
-              <span>
+              <span className="truncate">
                 {isSubmitting
                   ? "Menyimpan..."
                   : hasConflicts

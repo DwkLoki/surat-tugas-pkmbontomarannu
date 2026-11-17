@@ -11,7 +11,7 @@ interface SuratDocumentProps {
 
 export function SuratDocument({ surat }: SuratDocumentProps) {
   return (
-    <div className="bg-white text-black font-sans text-[12pt] leading-relaxed p-8 sm:p-12 max-w-[210mm] min-h-[297mm] mx-auto shadow-lg print:shadow-none print:p-0 print:m-0 print:max-w-none print:w-full">
+    <div className="bg-white text-black font-sans text-[12pt] leading-relaxed p-6 sm:p-10 md:p-12 w-[210mm] max-w-full min-w-[680px] md:min-w-0 md:max-w-[210mm] min-h-[297mm] mx-auto shadow-lg print:shadow-none print:p-0 print:m-0 print:max-w-none print:min-w-0 print:w-full">
       {/* KOP SURAT */}
       <div className="relative border-b-[3px] border-black pb-2 mb-4">
         <div className="flex items-center justify-between">

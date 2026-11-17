@@ -31,39 +31,43 @@ export function SuratDetailView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Top Action Bar (Hidden on print) */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 print:hidden">
+      <div className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 print:hidden">
         <button
           onClick={onBack}
-          className="inline-flex items-center space-x-2 text-sm font-semibold text-gray-700 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 text-xs sm:text-sm font-semibold text-gray-700 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition self-start"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Katalog</span>
+          <ArrowLeft className="w-4 h-4 shrink-0" />
+          <span>
+            Kembali<span className="hidden sm:inline"> ke Katalog</span>
+          </span>
         </button>
 
-        <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-end">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:space-x-3 w-full sm:w-auto">
           <button
             onClick={() => onEdit(surat)}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition border border-blue-200"
+            className="col-span-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition border border-blue-200"
           >
-            <Edit3 className="w-4 h-4" />
+            <Edit3 className="w-4 h-4 shrink-0" />
             <span>Edit</span>
           </button>
 
           <button
             onClick={handleDownloadExcel}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 transition border border-teal-200"
+            className="col-span-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 transition border border-teal-200"
           >
-            <Download className="w-4 h-4" />
-            <span>Unduh Excel (.xlsx)</span>
+            <Download className="w-4 h-4 shrink-0" />
+            <span>
+              Excel<span className="hidden sm:inline"> (.xlsx)</span>
+            </span>
           </button>
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-xs"
+            className="col-span-2 sm:col-span-1 inline-flex items-center justify-center space-x-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-xs"
           >
-            <Printer className="w-4 h-4" />
+            <Printer className="w-4 h-4 shrink-0" />
             <span>Cetak / Simpan PDF</span>
           </button>
         </div>
@@ -77,8 +81,13 @@ export function SuratDetailView({
       </div>
 
       {/* Official Document */}
-      <div className="overflow-x-auto pb-8 print:p-0 print:m-0 print:overflow-visible">
-        <SuratDocument surat={surat} />
+      <div className="space-y-1">
+        <div className="md:hidden text-center text-[11px] text-gray-500 print:hidden">
+          ↔ Geser ke samping untuk melihat lembar surat penuh
+        </div>
+        <div className="overflow-x-auto pb-8 print:p-0 print:m-0 print:overflow-visible">
+          <SuratDocument surat={surat} />
+        </div>
       </div>
     </div>
   );
