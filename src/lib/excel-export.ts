@@ -36,6 +36,30 @@ export async function exportSuratToExcel(surat: SuratTugas): Promise<void> {
     { key: "colE", width: 46 },
   ];
 
+  // Embed Logo Kabupaten Takalar ke kop surat
+  try {
+    const logoResponse = await fetch("/logo-takalar.png");
+    const logoArrayBuffer = await logoResponse.arrayBuffer();
+    const logoBytes = new Uint8Array(logoArrayBuffer);
+    let binary = "";
+    for (let i = 0; i < logoBytes.length; i++) {
+      binary += String.fromCharCode(logoBytes[i]);
+    }
+    const base64Logo = btoa(binary);
+    const imageId = workbook.addImage({
+      base64: base64Logo,
+      extension: "png",
+    });
+    // Posisi logo: kolom A-B, baris 1-5 (sesuai template asli)
+    worksheet.addImage(imageId, {
+      tl: { col: 0.1, row: 0.5 },
+      ext: { width: 72, height: 85 },
+      editAs: "oneCell",
+    });
+  } catch (err) {
+    console.warn("Gagal menyisipkan logo ke Excel:", err);
+  }
+
   // Helper border styling
   const thinBorder: Partial<ExcelJS.Borders> = {
     top: { style: "thin" },
