@@ -19,6 +19,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ANIMASI SHAKE UNTUK PIN SALAH */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
 /* PRINT CSS CONFIGURATION FOR SURAT DINAS */
 @page {
   size: A4 portrait;
