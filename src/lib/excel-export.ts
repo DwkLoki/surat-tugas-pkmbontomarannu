@@ -226,7 +226,8 @@ export async function exportSuratToExcel(surat: SuratTugas): Promise<void> {
     // NIP di bawah nama
     worksheet.mergeCells(`B${nipRow}:D${nipRow}`);
     const nipCell = worksheet.getCell(`B${nipRow}`);
-    nipCell.value = petugas.nip ? `Nip. ${petugas.nip}` : "-";
+    nipCell.value =
+      petugas.nip && petugas.nip !== "-" ? `Nip. ${petugas.nip}` : "-";
     nipCell.font = { name: "Arial", size: 10 };
     nipCell.alignment = { horizontal: "left", vertical: "middle" };
     worksheet.getCell(`B${nipRow}`).border = thinBorder;

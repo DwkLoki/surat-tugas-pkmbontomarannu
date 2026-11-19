@@ -121,7 +121,7 @@ export function SuratDocument({ surat }: SuratDocumentProps) {
                 <td className="border border-black px-3 py-2 align-top">
                   <div className="font-bold text-black">{petugas.nama}</div>
                   <div className="text-[9.5pt] text-gray-800">
-                    {petugas.nip ? `Nip. ${petugas.nip}` : "-"}
+                    {petugas.nip && petugas.nip !== "-" ? `Nip. ${petugas.nip}` : "-"}
                   </div>
                 </td>
                 <td className="border border-black px-3 py-2 align-top">
