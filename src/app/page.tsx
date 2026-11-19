@@ -6,6 +6,8 @@ import { SuratTable } from "@/components/SuratTable";
 import { SuratForm } from "@/components/SuratForm";
 import { SuratDetailView } from "@/components/SuratDetailView";
 import { DeleteModal } from "@/components/DeleteModal";
+import { PinLogin } from "@/components/PinLogin";
+import { useIsMounted, useIsAuthenticated, clearAuthSession } from "@/lib/auth";
 import {
   getSuratList,
   createSurat,
@@ -30,8 +32,12 @@ export default function HomePage() {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  // Load data dari storage
+  const isMounted = useIsMounted();
+  const isAuthenticated = useIsAuthenticated();
+
+  // Load data dari storage saat terautentikasi
   useEffect(() => {
+    if (!isAuthenticated) return;
     let isCancelled = false;
 
     async function fetchData() {
@@ -61,7 +67,7 @@ export default function HomePage() {
     return () => {
       isCancelled = true;
     };
-  }, [refreshTrigger]);
+  }, [refreshTrigger, isAuthenticated]);
 
   const reloadData = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -138,6 +144,25 @@ export default function HomePage() {
     }
   };
 
+  const handleLogout = () => {
+    clearAuthSession();
+  };
+
+  // Loading state saat memeriksa sesi PIN awal
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mb-2" />
+        <p className="text-xs text-gray-500 font-medium">Memeriksa sesi akses...</p>
+      </div>
+    );
+  }
+
+  // Tampilkan form PIN jika belum terautentikasi
+  if (!isAuthenticated) {
+    return <PinLogin onSuccess={() => {}} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Top Navbar */}
@@ -150,6 +175,7 @@ export default function HomePage() {
             setActiveTab("list");
           }
         }}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}

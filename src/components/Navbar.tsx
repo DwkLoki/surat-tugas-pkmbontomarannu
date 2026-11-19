@@ -2,14 +2,15 @@
 
 import React from "react";
 import Image from "next/image";
-import { FileText, PlusCircle } from "lucide-react";
+import { FileText, PlusCircle, Lock } from "lucide-react";
 
 interface NavbarProps {
   currentTab: "list" | "create" | "detail";
   onTabChange: (tab: "list" | "create") => void;
+  onLogout?: () => void;
 }
 
-export function Navbar({ currentTab, onTabChange }: NavbarProps) {
+export function Navbar({ currentTab, onTabChange, onLogout }: NavbarProps) {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs print:hidden">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -70,6 +71,18 @@ export function Navbar({ currentTab, onTabChange }: NavbarProps) {
                 Buat<span className="hidden sm:inline"> Surat</span>
               </span>
             </button>
+
+            {/* Tombol Kunci / Keluar */}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-500 hover:text-rose-600 hover:bg-rose-50 transition border border-transparent hover:border-rose-200 shrink-0"
+                title="Kunci Akses Sistem (Keluar)"
+              >
+                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="hidden md:inline">Kunci</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
